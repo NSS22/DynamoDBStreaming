@@ -1,0 +1,23 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'S3 Deployment Bucket'
+
+Parameters:
+
+  ApiName:
+    Description: Name of the API
+    Type: String
+    Default: nss
+
+Resources:
+  S3LambdaDeploymentBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: 'nss-deployment-bucket'
+
+Outputs:
+
+  S3LambdaDeploymentBucketName:
+    Description: S3 deployment bucket name
+    Value: !Ref S3LambdaDeploymentBucket
+    Export:
+      Name: !Join [ '', [!Ref ApiName, '-s3-bucket-name']]

@@ -1,0 +1,64 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Parameters:
+
+  ApiName:
+    Description: Name of the API
+    Type: String
+    Default: nss
+
+Resources:
+  DynamoDBTableStream:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      AttributeDefinitions:
+        - AttributeName: 'id'
+          AttributeType: 'S'
+      KeySchema:
+        - AttributeName: 'id'
+          KeyType: 'HASH'
+      ProvisionedThroughput:
+        ReadCapacityUnits: '5'
+        WriteCapacityUnits: '5'
+      StreamSpecification:
+        StreamViewType: NEW_IMAGE
+      TableName: !Join ['', [!Ref ApiName, '-stream']]
+
+  DynamoDBTableSNSListener:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      AttributeDefinitions:
+        - AttributeName: 'id'
+          AttributeType: 'S'
+      KeySchema:
+        - AttributeName: 'id'
+          KeyType: 'HASH'
+      ProvisionedThroughput:
+        ReadCapacityUnits: '5'
+        WriteCapacityUnits: '5'
+      TableName: !Join ['', [!Ref ApiName, '-sns-listener']]
+
+Outputs:
+
+  DynamoDBTableStreamName:
+    Description: DynamoDB Stream table name
+    Value: !Ref DynamoDBTableStream
+    Export:
+      Name: !Join [ '', [!Ref ApiName, '-dynamoDB-stream']]
+
+  DynamoDBTableStreamArn:
+    Description: DynamoDB Stream table ARN
+    Value: !GetAtt DynamoDBTableStream.StreamArn
+    Export:
+      Name: !Join [ '', [!Ref ApiName, '-dynamoDB-stream-arn']]
+
+  DynamoDBTableSNSListenerName:
+    Description: DynamoDB SNS listener table name
+    Value: !Ref DynamoDBTableSNSListener
+    Export:
+      Name: !Join [ '', [!Ref ApiName, '-dynamoDB-sns-listener']]
+
+  DynamoDBTableSNSListenerArn:
+    Description: DynamoDB SNS listener table ARN
+    Value: !GetAtt DynamoDBTableSNSListener.Arn
+    Export:
+      Name: !Join [ '', [!Ref ApiName, '-dynamoDB-sns-listener-arn']]

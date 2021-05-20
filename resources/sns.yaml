@@ -1,0 +1,57 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Parameters:
+
+  ApiName:
+    Description: Name of the API
+    Type: String
+    Default: nss
+
+Resources:
+  DynamoDBStreamSNSTopic:
+    Type: AWS::SNS::Topic
+    Properties:
+      FifoTopic: true
+      TopicName: !Join ['', [!Ref ApiName, '-dynamoDB-stream-topic.fifo']]
+
+  DynamoDBStreamSNSTopicSubscription:
+    Type: AWS::SNS::Subscription
+    Properties:
+      TopicArn: !Ref DynamoDBStreamSNSTopic
+      Endpoint: !ImportValue
+        'Fn::Sub': '${ApiName}-stream-queue-arn'
+      Protocol: sqs
+      RawMessageDelivery: 'true'
+
+  SNSToSQSPolicy:
+    Type: AWS::SQS::QueuePolicy
+    Properties:
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Sid: Allow SNS publish to SQS
+            Effect: Allow
+            Principal: '*'
+            Action:
+              - sqs:SendMessage
+            Resource: !ImportValue
+              'Fn::Sub': '${ApiName}-stream-queue-url'
+            Condition:
+              ArnEquals:
+                aws:SourceArn: !Ref DynamoDBStreamSNSTopic
+      Queues:
+        - !ImportValue 'nss-stream-queue-url'
+
+Outputs:
+
+  DynamoDBStreamSNSTopicArn:
+    Description: DynamoDB Stream SNS topic ARN
+    Value: !Ref DynamoDBStreamSNSTopic
+    Export:
+      Name: !Join [ '', [!Ref ApiName, '-dynamoDB-stream-sns-topic-arn']]
+
+  DynamoDBStreamSNSTopicName:
+    Description: DynamoDB Stream SNS topic name
+    Value: !GetAtt DynamoDBStreamSNSTopic.TopicName
+    Export:
+      Name: !Join [ '', [!Ref ApiName, '-dynamoDB-stream-sns-topic-name']]
+

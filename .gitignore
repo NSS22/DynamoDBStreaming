@@ -1,0 +1,3 @@
+.idea
+src/lambda/sqsHandler/node_modules
+src/lambda/streamHandler/node_modules

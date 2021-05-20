@@ -1,0 +1,15 @@
+{
+  "name": "sqshandler",
+  "version": "1.0.0",
+  "description": "Lambda SQS stream handler",
+  "main": "index.js",
+  "author": "NSS",
+  "license": "ISC",
+  "scripts": {
+
+  },
+  "dependencies": {
+    "aws-lambda": "^1.0.6",
+    "aws-sdk": "^2.908.0"
+  }
+}

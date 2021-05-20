@@ -1,0 +1,32 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Parameters:
+
+  ApiName:
+    Description: Name of the API
+    Type: String
+    Default: nss
+
+Resources:
+  StreamQueue:
+    Type: AWS::SQS::Queue
+    Properties:
+      QueueName: StreamQueue.fifo
+      FifoQueue: true
+
+Outputs:
+
+  QueueURL:
+    Description: 'URL of stream Queue'
+    Value: !Ref StreamQueue
+    Export:
+      Name: !Join [ '', [!Ref ApiName, '-stream-queue-url']]
+
+  QueueARN:
+    Description: 'ARN of stream Queue'
+    Value: !GetAtt StreamQueue.Arn
+    Export:
+      Name: !Join [ '', [!Ref ApiName, '-stream-queue-arn']]
+
+  QueueName:
+    Description: 'Name of stream Queue'
+    Value: !GetAtt StreamQueue.QueueName
