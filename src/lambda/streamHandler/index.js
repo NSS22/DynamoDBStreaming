@@ -1,4 +1,4 @@
-import SNS from 'aws-sdk/clients/sns';
+const SNS = require('aws-sdk/clients/sns');
 
 const snsClient = new SNS({ region: 'eu-central-1' });
 
@@ -11,7 +11,9 @@ exports.processDynamoDBStream = async (event) => {
             await snsClient.publish({
                 Subject: subject,
                 TopicArn: topicArn,
-                Message: record,
+                MessageGroupId: 'SaveEvent',
+                MessageDeduplicationId: `${record.eventID}`,
+                Message: JSON.stringify(record.dynamodb.NewImage),
             }).promise();
         }
     } catch (error) {

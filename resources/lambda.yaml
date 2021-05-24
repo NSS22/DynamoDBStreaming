@@ -19,7 +19,7 @@ Resources:
             'Fn::Sub': '${ApiName}-dynamoDB-stream-sns-topic-name'
           SNS_TOPIC_ARN: !ImportValue
             'Fn::Sub': '${ApiName}-dynamoDB-stream-sns-topic-arn'
-      Handler: '../src/lambda/streamHandler/index.processDynamoDBStream'
+      Handler: index.processDynamoDBStream
       Code:
         S3Bucket: !ImportValue
           'Fn::Sub': '${ApiName}-s3-bucket-name'
@@ -43,7 +43,7 @@ Resources:
         Variables:
           SQS_URL: !ImportValue
             'Fn::Sub': '${ApiName}-stream-queue-url'
-      Handler: '../src/lambda/sqsHandler/index.processSQSMessages'
+      Handler: index.processSQSMessages
       Code:
         S3Bucket: !ImportValue
           'Fn::Sub': '${ApiName}-s3-bucket-name'

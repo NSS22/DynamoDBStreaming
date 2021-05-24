@@ -30,7 +30,7 @@ Resources:
         Statement:
           - Sid: Allow SNS publish to SQS
             Effect: Allow
-            Principal: '*'
+            Principal: sns.amazonaws.com
             Action:
               - sqs:SendMessage
             Resource: !ImportValue

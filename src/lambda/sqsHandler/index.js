@@ -1,5 +1,5 @@
-import SQS from 'aws-sdk/clients/sqs'
-import DynamoDB from 'aws-sdk/clients/sqs';
+const SQS = require('aws-sdk/clients/sqs');
+const DynamoDB = require('aws-sdk/clients/sqs');
 
 const sqsClient = new SQS({ region: 'eu-central-1', apiVersion: '2012-11-05' });
 const dynamoDBClient = new DynamoDB({ region: 'eu-central-1' });
