@@ -43,6 +43,8 @@ Resources:
         Variables:
           SQS_URL: !ImportValue
             'Fn::Sub': '${ApiName}-stream-queue-url'
+          LISTENER_DYNAMODB_TABLE_NAME: !ImportValue
+            'Fn::Sub': '${ApiName}-dynamoDB-sns-listener'
       Handler: index.processSQSMessages
       Code:
         S3Bucket: !ImportValue

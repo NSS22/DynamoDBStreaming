@@ -34,7 +34,7 @@ Resources:
           Effect: Allow
           Principal: '*'
           Resource: !ImportValue
-            'Fn::Sub': '${ApiName}-stream-queue-url'
+            'Fn::Sub': '${ApiName}-stream-queue-arn'
           Condition:
             ArnEquals:
               aws:SourceArn: !Ref DynamoDBStreamSNSTopic

@@ -1,31 +1,24 @@
 const AWS = require('aws-sdk');
 
 const documentClient = new AWS.DynamoDB.DocumentClient();
-const sqsClient = new AWS.SQS({ region: 'eu-west-1', apiVersion: '2012-11-05' });
 
 exports.processSQSMessages = async (event) => {
-    const params = {
-        QueueUrl: process.env.SQS_URL,
-        VisibilityTimeout: 600,
-    };
+    const listenerTableName = process.env.LISTENER_DYNAMODB_TABLE_NAME;
 
-    console.log('SQS event: ', JSON.stringify(event));
+    console.log('Event Records: ', JSON.stringify(event.Records));
 
     try {
-        const messages = await sqsClient.receiveMessage(params).promise();
-        const dynamoDBItems = messages.map(({ messageId, body }) => {
+      const dynamoDBItems = event.Records.map(({ body }) => {
             return {
                 PutRequest: {
-                    Item: {
-                        'id': { 'S': messageId },
-                        'body': { 'S': body },
-                    }
+                    Item: JSON.parse(body)
                 }
             }
         });
+
         await documentClient.batchWrite({
             RequestItems: {
-                'indications-table': dynamoDBItems
+                [listenerTableName]: dynamoDBItems
             }
         }).promise();
     } catch (error) {
