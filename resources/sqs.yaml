@@ -10,8 +10,7 @@ Resources:
   StreamQueue:
     Type: AWS::SQS::Queue
     Properties:
-      QueueName: StreamQueue.fifo
-      FifoQueue: true
+      QueueName: StreamQueue
 
 Outputs:
 

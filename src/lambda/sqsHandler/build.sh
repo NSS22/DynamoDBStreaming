@@ -1,1 +1,1 @@
-zip -r index.zip node_modules index.js package.json package-lock.json
+zip -r index.zip index.js

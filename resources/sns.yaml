@@ -10,8 +10,7 @@ Resources:
   DynamoDBStreamSNSTopic:
     Type: AWS::SNS::Topic
     Properties:
-      FifoTopic: true
-      TopicName: !Join ['', [!Ref ApiName, '-dynamoDB-stream-topic.fifo']]
+      TopicName: !Join ['', [!Ref ApiName, '-dynamoDB-stream-topic']]
 
   DynamoDBStreamSNSTopicSubscription:
     Type: AWS::SNS::Subscription
@@ -25,21 +24,20 @@ Resources:
   SNSToSQSPolicy:
     Type: AWS::SQS::QueuePolicy
     Properties:
-      PolicyDocument:
-        Version: '2012-10-17'
-        Statement:
-          - Sid: Allow SNS publish to SQS
-            Effect: Allow
-            Principal: sns.amazonaws.com
-            Action:
-              - sqs:SendMessage
-            Resource: !ImportValue
-              'Fn::Sub': '${ApiName}-stream-queue-url'
-            Condition:
-              ArnEquals:
-                aws:SourceArn: !Ref DynamoDBStreamSNSTopic
       Queues:
-        - !ImportValue 'nss-stream-queue-url'
+        - !ImportValue
+          'Fn::Sub': '${ApiName}-stream-queue-url'
+      PolicyDocument:
+        Statement:
+          Action:
+            - sqs:SendMessage
+          Effect: Allow
+          Principal: '*'
+          Resource: !ImportValue
+            'Fn::Sub': '${ApiName}-stream-queue-url'
+          Condition:
+            ArnEquals:
+              aws:SourceArn: !Ref DynamoDBStreamSNSTopic
 
 Outputs:
 

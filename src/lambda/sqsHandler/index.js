@@ -1,14 +1,15 @@
-const SQS = require('aws-sdk/clients/sqs');
-const DynamoDB = require('aws-sdk/clients/sqs');
+const AWS = require('aws-sdk');
 
-const sqsClient = new SQS({ region: 'eu-central-1', apiVersion: '2012-11-05' });
-const dynamoDBClient = new DynamoDB({ region: 'eu-central-1' });
+const documentClient = new AWS.DynamoDB.DocumentClient();
+const sqsClient = new AWS.SQS({ region: 'eu-west-1', apiVersion: '2012-11-05' });
 
 exports.processSQSMessages = async (event) => {
     const params = {
         QueueUrl: process.env.SQS_URL,
         VisibilityTimeout: 600,
     };
+
+    console.log('SQS event: ', JSON.stringify(event));
 
     try {
         const messages = await sqsClient.receiveMessage(params).promise();
@@ -22,7 +23,7 @@ exports.processSQSMessages = async (event) => {
                 }
             }
         });
-        await dynamoDBClient.batchWriteItem({
+        await documentClient.batchWrite({
             RequestItems: {
                 'indications-table': dynamoDBItems
             }

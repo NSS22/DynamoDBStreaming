@@ -1,6 +1,6 @@
-const SNS = require('aws-sdk/clients/sns');
+const AWS = require('aws-sdk');
 
-const snsClient = new SNS({ region: 'eu-central-1' });
+const snsClient = new AWS.SNS({ region: 'eu-west-1' });
 
 exports.processDynamoDBStream = async (event) => {
     try {
@@ -8,12 +8,12 @@ exports.processDynamoDBStream = async (event) => {
         const topicArn = process.env.SNS_TOPIC_ARN;
 
         for (const record of event.Records) {
+            const dynamoDBNewImage = AWS.DynamoDB.Converter.unmarshall(record.dynamodb.NewImage);
+
             await snsClient.publish({
                 Subject: subject,
                 TopicArn: topicArn,
-                MessageGroupId: 'SaveEvent',
-                MessageDeduplicationId: `${record.eventID}`,
-                Message: JSON.stringify(record.dynamodb.NewImage),
+                Message: JSON.stringify(dynamoDBNewImage),
             }).promise();
         }
     } catch (error) {
